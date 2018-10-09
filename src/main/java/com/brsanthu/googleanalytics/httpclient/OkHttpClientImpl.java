@@ -156,10 +156,10 @@ public class OkHttpClientImpl implements HttpClient {
         try {
 
             Response okResp = client.newCall(request).execute();
-            if (logger.isDebugEnabled()) logger.debug("post() response code/success: " + okResp.code() + " / " + okResp.isSuccessful());
+            if (logger.isDebugEnabled()) logger.debug("postBatch() response code/success: " + okResp.code() + " / " + okResp.isSuccessful());
 
             resp.setStatusCode(okResp.code());
-
+            okResp.close(); // this marks the response as consumed, and allows the connection to be re-used
         } catch (Exception e) {
             logger.warn("OkHttpClientImpl.post()/OkHttpClient.newCall() error", e);
         }
