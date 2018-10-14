@@ -13,12 +13,12 @@ Maven:
     <dependency>
         <groupId>net.mikehardy</groupId>
         <artifactId>google-analytics-java</artifactId>
-        <version>2.0.3</version>
+        <version>2.0.4</version>
     </dependency>
 
 Gradle:
 
-    implementation 'net.mikehardy:google-analytics-java:2.0.3'
+    implementation 'net.mikehardy:google-analytics-java:2.0.4'
 
 Others: [Check Here](https://search.maven.org/#artifactdetails%7Cnet.mikehardy%7Cgoogle-analytics-java%7C2.0.0%7Cjar)
 
@@ -169,16 +169,21 @@ Library abstracts http client interaction via `HttpClient` interface with defaul
 
 Release Notes
 ==
+Version 2.0.4
+--
+* Compatibility - removed slf4j-simple from test to prevent dependency pollution (#20)
+* Enhancement - added more API abilities to manipulate sampling, and added sampling test
+
 Version 2.0.3
 --
-Compatibility - Altered Core and OkHttpClientImpl so it worked with minSDK / API15 on Android
+* Compatibility - Altered Core and OkHttpClientImpl so it worked with minSDK / API15 on Android
 
 Version 2.0.2
 --
-Error - Fixed #11 - not closing OkHttp response body in postBatch()
-Enhancement - Fixed #16 - implemented basic sampling strategy with GoogleAnalyticsConfig.setSamplePercentage(int)
-Enhancement - request parameters are alphabetically ordered so they are predictable now 
-Build - fix javadoc generation on JDK10+
+* Error - Fixed #11 - not closing OkHttp response body in postBatch()
+* Enhancement - Fixed #16 - implemented basic sampling strategy with GoogleAnalyticsConfig.setSamplePercentage(int)
+* Enhancement - request parameters are alphabetically ordered so they are predictable now
+* Build - fix javadoc generation on JDK10+
 
 Version 2.0.1 - Oct 02 2018
 --
@@ -217,9 +222,9 @@ Version 1.0.3 - Jan 20 2014
 Other Implementations
 ==
 
-This is a fork or what I still consider the "upstream" version here: https://github.com/brsanthu/google-analytics-java
+This is a fork of what I still consider the "upstream" version here: https://github.com/brsanthu/google-analytics-java
 
-Santosh Kumar created what I believe is the best open-source Java google analytics client. My only reason for forking was a desire for a large number of changes rapidly and I didn't see PRs being accepted in the main repo - no other reason and an eventual merge would be fine. Please fork this repo and move forward if I don't respond to you :-)
+Santosh Kumar created what I believe is the best open-source Java google analytics client. My only reason for forking was a desire for a large number of changes rapidly and I didn't see PRs being accepted in the main repo - no other reason and an eventual merge would be fine. In the same manner: please fork this repo and move forward if I don't respond to you :-)
 
 There are few Java implementation of Google Analytics api, but found some issues (or protocol mismatch) with each of them.
 

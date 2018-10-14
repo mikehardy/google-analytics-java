@@ -39,6 +39,10 @@ public interface GoogleAnalytics extends AutoCloseable {
 
     GoogleAnalyticsConfig getConfig();
 
+    boolean inSample();
+
+    boolean performSamplingElection();
+
     void ifEnabled(Runnable runnable);
 
     void resetStats();

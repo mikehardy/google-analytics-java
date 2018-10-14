@@ -45,17 +45,20 @@ import com.brsanthu.googleanalytics.request.TimingHit;
 import com.brsanthu.googleanalytics.request.TransactionHit;
 
 /**
- * This is the main class of this library that accepts the requests from clients and sends the events to Google
- * Analytics (GA).
+ * This is the main class of this library that accepts the requests from clients
+ * and sends the events to Google Analytics (GA).
  *
- * Clients needs to instantiate this object with {@link GoogleAnalyticsConfig} and {@link DefaultRequest}. Configuration
- * contains sensible defaults so one could just initialize using one of the convenience constructors.
+ * Clients needs to instantiate this object with {@link GoogleAnalyticsConfig}
+ * and {@link DefaultRequest}. Configuration contains sensible defaults so one
+ * could just initialize using one of the convenience constructors.
  *
- * This object is ThreadSafe and it is intended that clients create one instance of this for each GA Tracker Id and
- * reuse each time an event needs to be posted.
+ * This object is ThreadSafe and it is intended that clients create one instance
+ * of this for each GA Tracker Id and reuse each time an event needs to be
+ * posted.
  *
- * This object contains resources which needs to be shutdown/disposed. So {@link #close()} method is called to release
- * all resources. Once close method is called, this instance cannot be reused so create new instance if required.
+ * This object contains resources which needs to be shutdown/disposed. So
+ * {@link #close()} method is called to release all resources. Once close method
+ * is called, this instance cannot be reused so create new instance if required.
  */
 public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExecutor {
     protected static final Logger logger = LoggerFactory.getLogger(GoogleAnalyticsImpl.class);
@@ -64,27 +67,37 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
     protected final DefaultRequest defaultRequest;
     protected final HttpClient httpClient;
     protected final ExecutorService executor;
+    protected boolean inSample = true;
     protected GoogleAnalyticsStatsImpl stats = new GoogleAnalyticsStatsImpl();
     protected List<HttpRequest> currentBatch = new ArrayList<>();
 
-    public GoogleAnalyticsImpl(GoogleAnalyticsConfig config, DefaultRequest defaultRequest, HttpClient httpClient, ExecutorService executor) {
+    public GoogleAnalyticsImpl(GoogleAnalyticsConfig config, DefaultRequest defaultRequest, HttpClient httpClient,
+            ExecutorService executor) {
         this.config = config;
         this.defaultRequest = defaultRequest;
         this.httpClient = httpClient;
         this.executor = executor;
+        performSamplingElection();
+    }
 
+    public boolean performSamplingElection() {
         // As we are constructed, determine if we should be in the sample or not
-        if (config.getSamplePercentage() < 100) {
-            int randomNum = new Random().nextInt(100) + 1;
-            if (randomNum > config.getSamplePercentage()) {
-                logger.info("This session will not participate in the analytics sample, sample percantage vs random: " +
-                        config.getSamplePercentage() + " " + randomNum);
-                this.config.setEnabled(false);
-            } else {
-                logger.info("This session will participate in the analytics sample, sample percentage vs random: " +
-                        config.getSamplePercentage() + " " + randomNum);
-            }
+        int randomNum = new Random().nextInt(100) + 1;
+        if (randomNum > config.getSamplePercentage()) {
+            logger.info("Not participating in analytics sample (sample percentage vs random: "
+                    + config.getSamplePercentage() + " " + randomNum + ")");
+            inSample = false;
+        } else {
+            logger.info("Participating in analytics sample (sample percentage vs random: "
+                    + config.getSamplePercentage() + " " + randomNum + ")");
+            inSample = true;
         }
+        return inSample();
+    }
+
+    @Override
+    public boolean inSample() {
+        return inSample;
     }
 
     @Override
@@ -98,7 +111,7 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
 
     @Override
     public Future<GoogleAnalyticsResponse> postAsync(GoogleAnalyticsRequest<?> request) {
-        if (!config.isEnabled()) {
+        if (!config.isEnabled() || !inSample()) {
             return null;
         }
 
@@ -108,7 +121,7 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
     @Override
     public GoogleAnalyticsResponse post(GoogleAnalyticsRequest<?> gaReq) {
         GoogleAnalyticsResponse response = new GoogleAnalyticsResponse();
-        if (!config.isEnabled()) {
+        if (!config.isEnabled() || !inSample()) {
             return response;
         }
 
@@ -153,12 +166,14 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
 
         if (isSubmitBatch(force)) {
 
-            // Synchronized block is to ensure only one of the writers will actually write the batch.
+            // Synchronized block is to ensure only one of the writers will actually write
+            // the batch.
             synchronized (currentBatch) {
 
                 // If two threads pass the if condition and then one of them actually writes,
                 // other will do the same since they were blocked sync block. this ensures that
-                // others will not post it even if multiple threads were to wait at sync block at same time
+                // others will not post it even if multiple threads were to wait at sync block
+                // at same time
                 // https://en.wikipedia.org/wiki/Double-checked_locking
                 if (isSubmitBatch(force)) {
                     logger.debug("Submitting a batch of " + currentBatch.size() + " requests to GA");
@@ -225,7 +240,8 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
     }
 
     /**
-     * Processes the custom dimensions and adds the values to list of parameters, which would be posted to GA.
+     * Processes the custom dimensions and adds the values to list of parameters,
+     * which would be posted to GA.
      *
      * @param request
      * @param req
@@ -247,7 +263,8 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
     }
 
     /**
-     * Processes the custom metrics and adds the values to list of parameters, which would be posted to GA.
+     * Processes the custom metrics and adds the values to list of parameters, which
+     * would be posted to GA.
      *
      * @param request
      * @param req
