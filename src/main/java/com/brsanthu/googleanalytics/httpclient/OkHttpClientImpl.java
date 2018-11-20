@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import com.brsanthu.googleanalytics.GoogleAnalyticsConfig;
 
 import okhttp3.Authenticator;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Credentials;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -97,9 +100,7 @@ public class OkHttpClientImpl implements HttpClient {
     }
 
     @Override
-    public HttpResponse post(HttpRequest req) {
-        HttpResponse resp = new HttpResponse();
-
+    public CompletableFuture<HttpResponse> post(HttpRequest req) {
         FormBody.Builder formBuilder = new FormBody.Builder(Charset.forName("UTF-8"));
         Map<String, String> reqParams = req.getBodyParams();
         for (String key : reqParams.keySet()) {
@@ -111,23 +112,30 @@ public class OkHttpClientImpl implements HttpClient {
         Request request = new Request.Builder().url(req.getUrl()).post(body).build();
         if (logger.isDebugEnabled()) logger.debug("HttpClient.post() url/body: " + request.url() + " / " + renderBody(body));
 
-        try {
+        CompletableFuture<HttpResponse> completableFuture = new CompletableFuture<>();
 
-            Response okResp = client.newCall(request).execute();
-            if (logger.isDebugEnabled()) logger.debug("post() response code/success: " + okResp.code() + " / " + okResp.isSuccessful());
-            resp.setStatusCode(okResp.code());
-            okResp.close(); // this marks the response as consumed, and allows the connection to be re-used
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                logger.warn("OkHttpClientImpl.post()/OkHttpClient.newCall() error", e);
+                completableFuture.completeExceptionally(e);
+            }
 
-        } catch (Exception e) {
-            logger.warn("OkHttpClientImpl.post()/OkHttpClient.newCall() error", e);
-        }
+            @Override
+            public void onResponse(Call call, Response okResp) {
+                if (logger.isDebugEnabled()) logger.debug("post() response code/success: " + okResp.code() + " / " + okResp.isSuccessful());
+                HttpResponse resp = new HttpResponse();
+                resp.setStatusCode(okResp.code());
+                okResp.close(); // this marks the response as consumed, and allows the connection to be re-used
+                completableFuture.complete(resp);
+            }
+        });
 
-        return resp;
+        return completableFuture;
     }
 
     @Override
-    public HttpBatchResponse postBatch(HttpBatchRequest batchReq) {
-        HttpBatchResponse resp = new HttpBatchResponse();
+    public CompletableFuture<HttpBatchResponse> postBatch(HttpBatchRequest batchReq) {
         final okio.Buffer bodyBuffer = new okio.Buffer();
 
         // For each request in the batch, build up the encoded form string, and add it
@@ -153,18 +161,25 @@ public class OkHttpClientImpl implements HttpClient {
         Request request = new Request.Builder().url(batchReq.getUrl()).post(RequestBody.create(null, bodyBuffer.readUtf8())).build();
         if (logger.isDebugEnabled()) logger.debug("HttpClient.postBatch() url/body: " + request.url() + " / " + renderBody(request.body()));
 
-        try {
+        CompletableFuture<HttpBatchResponse> completableFuture = new CompletableFuture<>();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                logger.warn("OkHttpClientImpl.postBatch()/OkHttpClient.newCall() error", e);
+                completableFuture.completeExceptionally(e);
+            }
 
-            Response okResp = client.newCall(request).execute();
-            if (logger.isDebugEnabled()) logger.debug("postBatch() response code/success: " + okResp.code() + " / " + okResp.isSuccessful());
-
-            resp.setStatusCode(okResp.code());
-            okResp.close(); // this marks the response as consumed, and allows the connection to be re-used
-        } catch (Exception e) {
-            logger.warn("OkHttpClientImpl.postBatch()/OkHttpClient.newCall() error", e);
-        }
-
-        return resp;
+            @Override
+            public void onResponse(Call call, Response okResp) {
+                if (logger.isDebugEnabled()) logger.debug("postBatch() response code/success: " + okResp.code() + " / " + okResp.isSuccessful());
+                HttpBatchResponse resp = new HttpBatchResponse();
+                resp.setStatusCode(okResp.code());
+                okResp.close(); // this marks the response as consumed, and allows the connection to be re-used
+                completableFuture.complete(resp);
+            }
+        });
+            
+        return completableFuture;
     }
 
     @Override

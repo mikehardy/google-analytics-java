@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.http.HttpEntity;
@@ -93,7 +94,7 @@ public class ApacheHttpClientImpl implements HttpClient {
     }
 
     @Override
-    public HttpResponse post(HttpRequest req) {
+    public CompletableFuture<HttpResponse> post(HttpRequest req) {
         HttpResponse resp = new HttpResponse();
         CloseableHttpResponse httpResp = null;
 
@@ -118,11 +119,11 @@ public class ApacheHttpClientImpl implements HttpClient {
             }
         }
 
-        return resp;
+        return CompletableFuture.completedFuture(resp);
     }
 
     @Override
-    public HttpBatchResponse postBatch(HttpBatchRequest req) {
+    public CompletableFuture<HttpBatchResponse> postBatch(HttpBatchRequest req) {
         HttpBatchResponse resp = new HttpBatchResponse();
         CloseableHttpResponse httpResp = null;
 
@@ -147,6 +148,6 @@ public class ApacheHttpClientImpl implements HttpClient {
             }
         }
 
-        return resp;
+        return CompletableFuture.completedFuture(resp);
     }
 }
