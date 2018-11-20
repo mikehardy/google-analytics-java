@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import org.apache.http.HttpEntity;
@@ -35,9 +35,11 @@ public class ApacheHttpClientImpl implements HttpClient {
     private static final Logger logger = LoggerFactory.getLogger(ApacheHttpClientImpl.class);
 
     private CloseableHttpClient apacheHttpClient;
+    protected final ExecutorService executor;
 
     public ApacheHttpClientImpl(GoogleAnalyticsConfig config) {
-        apacheHttpClient = createHttpClient(config);
+        this.apacheHttpClient = createHttpClient(config);
+        this.executor = createExecutor(config);
     }
 
     @Override
@@ -95,59 +97,74 @@ public class ApacheHttpClientImpl implements HttpClient {
 
     @Override
     public CompletableFuture<HttpResponse> post(HttpRequest req) {
-        HttpResponse resp = new HttpResponse();
-        CloseableHttpResponse httpResp = null;
+        return CompletableFuture.supplyAsync(() -> {
+            HttpResponse resp = new HttpResponse();
+            CloseableHttpResponse httpResp = null;
 
-        try {
-
-            httpResp = execute(req.getUrl(), new UrlEncodedFormEntity(createNameValuePairs(req), StandardCharsets.UTF_8));
-            resp.setStatusCode(httpResp.getStatusLine().getStatusCode());
-
-        } catch (Exception e) {
-            if (e instanceof UnknownHostException) {
-                logger.warn("Couldn't connect to Google Analytics. Internet may not be available. " + e.toString());
-            } else {
-                logger.warn("Exception while sending the Google Analytics tracker request " + req, e);
-            }
-
-        } finally {
-            EntityUtils.consumeQuietly(httpResp.getEntity());
             try {
-                httpResp.close();
-            } catch (Exception e2) {
-                // ignore
-            }
-        }
 
-        return CompletableFuture.completedFuture(resp);
+                httpResp = execute(req.getUrl(), new UrlEncodedFormEntity(createNameValuePairs(req), StandardCharsets.UTF_8));
+                resp.setStatusCode(httpResp.getStatusLine().getStatusCode());
+
+            } catch (Exception e) {
+                if (e instanceof UnknownHostException) {
+                    logger.warn("Couldn't connect to Google Analytics. Internet may not be available. " + e.toString());
+                } else {
+                    logger.warn("Exception while sending the Google Analytics tracker request " + req, e);
+                }
+
+            } finally {
+                EntityUtils.consumeQuietly(httpResp.getEntity());
+                try {
+                    httpResp.close();
+                } catch (Exception e2) {
+                    // ignore
+                }
+            }
+
+            return (resp);
+        });
     }
 
     @Override
     public CompletableFuture<HttpBatchResponse> postBatch(HttpBatchRequest req) {
-        HttpBatchResponse resp = new HttpBatchResponse();
-        CloseableHttpResponse httpResp = null;
+        return CompletableFuture.supplyAsync(() -> {
+            HttpBatchResponse resp = new HttpBatchResponse();
+            CloseableHttpResponse httpResp = null;
 
-        try {
-            List<List<NameValuePair>> listOfReqPairs = req.getRequests().stream().map(this::createNameValuePairs).collect(Collectors.toList());
-            httpResp = execute(req.getUrl(), new BatchUrlEncodedFormEntity(listOfReqPairs));
-            resp.setStatusCode(httpResp.getStatusLine().getStatusCode());
-
-        } catch (Exception e) {
-            if (e instanceof UnknownHostException) {
-                logger.warn("Couldn't connect to Google Analytics. Internet may not be available. " + e.toString());
-            } else {
-                logger.warn("Exception while sending the Google Analytics tracker request " + req, e);
-            }
-
-        } finally {
-            EntityUtils.consumeQuietly(httpResp.getEntity());
             try {
-                httpResp.close();
-            } catch (Exception e2) {
-                // ignore
-            }
-        }
+                List<List<NameValuePair>> listOfReqPairs = req.getRequests().stream().map(this::createNameValuePairs).collect(Collectors.toList());
+                httpResp = execute(req.getUrl(), new BatchUrlEncodedFormEntity(listOfReqPairs));
+                resp.setStatusCode(httpResp.getStatusLine().getStatusCode());
 
-        return CompletableFuture.completedFuture(resp);
+            } catch (Exception e) {
+                if (e instanceof UnknownHostException) {
+                    logger.warn("Couldn't connect to Google Analytics. Internet may not be available. " + e.toString());
+                } else {
+                    logger.warn("Exception while sending the Google Analytics tracker request " + req, e);
+                }
+
+            } finally {
+                EntityUtils.consumeQuietly(httpResp.getEntity());
+                try {
+                    httpResp.close();
+                } catch (Exception e2) {
+                    // ignore
+                }
+            }
+
+            return resp;
+        });
+    }
+
+    protected ExecutorService createExecutor(GoogleAnalyticsConfig config) {
+        if (executor != null) {
+            return executor;
+        }
+        return new ThreadPoolExecutor(config.getMinThreads(), config.getMaxThreads(), config.getThreadTimeoutSecs(), TimeUnit.SECONDS,
+                new LinkedBlockingDeque<Runnable>(config.getThreadQueueSize()), createThreadFactory(config), new ThreadPoolExecutor.CallerRunsPolicy());
+    }
+    protected ThreadFactory createThreadFactory(GoogleAnalyticsConfig config) {
+        return new GoogleAnalyticsThreadFactory(config.getThreadNameFormat());
     }
 }
