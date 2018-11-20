@@ -1,9 +1,11 @@
 package com.brsanthu.googleanalytics.httpclient;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface HttpClient extends AutoCloseable {
-    HttpResponse post(HttpRequest req);
+    CompletableFuture<HttpResponse> post(HttpRequest req);
 
     boolean isBatchSupported();
 
-    HttpBatchResponse postBatch(HttpBatchRequest req);
+    CompletableFuture<HttpBatchResponse> postBatch(HttpBatchRequest req);
 }

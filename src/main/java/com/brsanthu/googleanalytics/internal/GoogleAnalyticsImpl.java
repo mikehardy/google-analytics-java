@@ -17,8 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,17 +67,14 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
     protected final GoogleAnalyticsConfig config;
     protected final DefaultRequest defaultRequest;
     protected final HttpClient httpClient;
-    protected final ExecutorService executor;
     protected boolean inSample = true;
     protected GoogleAnalyticsStatsImpl stats = new GoogleAnalyticsStatsImpl();
     protected List<HttpRequest> currentBatch = new ArrayList<>();
 
-    public GoogleAnalyticsImpl(GoogleAnalyticsConfig config, DefaultRequest defaultRequest, HttpClient httpClient,
-            ExecutorService executor) {
+    public GoogleAnalyticsImpl(GoogleAnalyticsConfig config, DefaultRequest defaultRequest, HttpClient httpClient) {
         this.config = config;
         this.defaultRequest = defaultRequest;
         this.httpClient = httpClient;
-        this.executor = executor;
         performSamplingElection();
     }
 
@@ -110,33 +108,27 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
     }
 
     @Override
-    public Future<GoogleAnalyticsResponse> postAsync(GoogleAnalyticsRequest<?> request) {
-        if (!config.isEnabled() || !inSample()) {
-            return null;
+    public GoogleAnalyticsResponse post(GoogleAnalyticsRequest<?> request) {
+        try {
+            return postAsync(request).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         }
-
-        return executor.submit(() -> post(request));
     }
 
     @Override
-    public GoogleAnalyticsResponse post(GoogleAnalyticsRequest<?> gaReq) {
+    public CompletableFuture<GoogleAnalyticsResponse> postAsync(GoogleAnalyticsRequest<?> gaReq) {
         GoogleAnalyticsResponse response = new GoogleAnalyticsResponse();
         if (!config.isEnabled() || !inSample()) {
-            return response;
+            return CompletableFuture.completedFuture(response);
         }
 
-        try {
-            if (config.isBatchingEnabled()) {
-                response = postBatch(gaReq);
-            } else {
-                response = postSingle(gaReq);
-            }
-
-        } catch (Exception e) {
-            logger.warn("Exception while sending the Google Analytics tracker request " + gaReq, e);
+        if (config.isBatchingEnabled()) {
+            return CompletableFuture.completedFuture(postBatch(gaReq));
+        } else {
+            return postSingle(gaReq);
         }
 
-        return response;
     }
 
     protected GoogleAnalyticsResponse postBatch(GoogleAnalyticsRequest<?> gaReq) {
@@ -188,20 +180,24 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
         return force || currentBatch.size() >= config.getBatchSize();
     }
 
-    protected GoogleAnalyticsResponse postSingle(GoogleAnalyticsRequest<?> gaReq) {
+    protected CompletableFuture<GoogleAnalyticsResponse> postSingle(GoogleAnalyticsRequest<?> gaReq) {
 
         HttpRequest httpReq = createHttpRequest(gaReq);
-        HttpResponse httpResp = httpClient.post(httpReq);
+        return httpClient.post(httpReq).thenApply(new Function<HttpResponse, GoogleAnalyticsResponse>() {
+            @Override
+            public GoogleAnalyticsResponse apply(HttpResponse httpResp) {
+                GoogleAnalyticsResponse response = new GoogleAnalyticsResponse();
+                response.setStatusCode(httpResp.getStatusCode());
+                response.setRequestParams(httpReq.getBodyParams());
 
-        GoogleAnalyticsResponse response = new GoogleAnalyticsResponse();
-        response.setStatusCode(httpResp.getStatusCode());
-        response.setRequestParams(httpReq.getBodyParams());
+                if (config.isGatherStats()) {
+                    GoogleAnalyticsImpl.this.gatherStats(gaReq);
+                }
+                ;
 
-        if (config.isGatherStats()) {
-            gatherStats(gaReq);
-        }
-
-        return response;
+                return response;
+            }
+        });
     }
 
     private HttpRequest createHttpRequest(GoogleAnalyticsRequest<?> gaReq) {
@@ -317,12 +313,6 @@ public class GoogleAnalyticsImpl implements GoogleAnalytics, GoogleAnalyticsExec
     @Override
     public void close() {
         flush();
-
-        try {
-            executor.shutdown();
-        } catch (Exception e) {
-            // ignore
-        }
 
         try {
             httpClient.close();
