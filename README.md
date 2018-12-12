@@ -13,14 +13,14 @@ Maven:
     <dependency>
         <groupId>net.mikehardy</groupId>
         <artifactId>google-analytics-java</artifactId>
-        <version>2.0.4</version>
+        <version>2.0.5</version>
     </dependency>
 
 Gradle:
 
-    implementation 'net.mikehardy:google-analytics-java:2.0.4'
+    implementation 'net.mikehardy:google-analytics-java:2.0.5'
 
-Others: [Check Here](https://search.maven.org/#artifactdetails%7Cnet.mikehardy%7Cgoogle-analytics-java%7C2.0.0%7Cjar)
+Others: [Check Here](https://search.maven.org/#artifactdetails%7Cnet.mikehardy%7Cgoogle-analytics-java%7C2.0.5%7Cjar)
 
 To get a local build, do
 
@@ -169,6 +169,10 @@ Library abstracts http client interaction via `HttpClient` interface with defaul
 
 Release Notes
 ==
+Version 2.0.5
+--
+* Enhancement - HTTP calls are Java-async now, still Android/Java7 compatible (thanks @jtjeferreira!)
+
 Version 2.0.4
 --
 * Compatibility - removed slf4j-simple from test to prevent dependency pollution (#20)
