@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.mikehardy</groupId>
-    <artifactId>google-analytics-java</artifactId>
+    <artifactId>google-analytics-java7</artifactId>
     <version>2.0.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -200,9 +200,9 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <name>Google Analytics Java API</name>
-    <url>https://github.com/mikehardy/google-analytics-java</url>
-    <description>Open Source Java API for Google Analytics.
+    <name>Google Analytics Java7 API</name>
+    <url>https://github.com/mikehardy/google-analytics-java/tree/java7</url>
+    <description>Open Source Java7 API for Google Analytics.
 
 More information about the protocol is available at https://developers.google.com/analytics/devguides/collection/protocol/v1/</description>
     <inceptionYear>Sep 2013</inceptionYear>
@@ -211,10 +211,10 @@ More information about the protocol is available at https://developers.google.co
         <name>Mike Hardy</name>
     </organization>
     <scm>
-        <url>https://github.com:mikehardy/google-analytics-java</url>
+        <url>https://github.com:mikehardy/google-analytics-java/tree/java7</url>
         <connection>scm:git:git@github.com:mikehardy/google-analytics-java.git</connection>
         <developerConnection>scm:git:git@github.com:mikehardy/google-analytics-java.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>java7</tag>
   </scm>
     <issueManagement>
         <system>github.com</system>
