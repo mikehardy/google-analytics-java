@@ -1,26 +1,22 @@
 Overview
 ==
-Java API for Google Analytics Measurement Protocol (part of Universal Analytics). This library
-is released under liberal Apache Open source License 2.0
+Java API for [Google Analytics Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/), with the Open Source compatible Apache 2.0 license
 
-Google Analytics Measurement Protocol is new tracking protocol, which will replace the legacy Tracking protocol.
-This protocol is documented at https://developers.google.com/analytics/devguides/collection/protocol/v1/
-
-The library is available in Maven Central. Add the following dependency and you are good to go.
+The library is available from Maven Central. Add the following dependency, replacing `$google-analytics-version` with the current stable version number:
 
 Maven:
 
     <dependency>
         <groupId>net.mikehardy</groupId>
         <artifactId>google-analytics-java</artifactId>
-        <version>2.0.5</version>
+        <version>$google-analytics-version</version>
     </dependency>
 
 Gradle:
 
-    implementation 'net.mikehardy:google-analytics-java:2.0.5'
+    implementation 'net.mikehardy:google-analytics-java:$google-analytics-version'
 
-Others: [Check Here](https://search.maven.org/#artifactdetails%7Cnet.mikehardy%7Cgoogle-analytics-java%7C2.0.5%7Cjar)
+Others: [Check Here](https://search.maven.org/#artifactdetails%7Cnet.mikehardy)
 
 To get a local build, do
 
@@ -29,12 +25,10 @@ To get a local build, do
 
 View Javadocs [here](https://www.javadoc.io/doc/net.mikehardy/google-analytics-java) 
 
-1.x vs 2.x
-==
-Note that Version 2.x has different api than 1.x. Version 2.x is refactoring of majority of structure of the library with goal of making library
-easy to use and make it feel fluently. It is based on Java 1.8.
+The fluent API is very easy to use, with sensible default options. 
 
-Here is [V1 Readme](https://github.com/net.mikehardy/google-analytics-java/wiki/V1-Readme)
+The library based on Java 1.8 but there is a supported version compatible with Java 1.7 (and Android down to at least API 15) using the [fairly amazing Java streamsupport / completable-futures compatibility library](https://github.com/stefan-zobel/streamsupport). If you need that, you'll just want to alter the dependency to use the "google-analytics-java7" artifact instead of "google-analytics-java"
+
 
 Features
 ==
@@ -169,20 +163,24 @@ Library abstracts http client interaction via `HttpClient` interface with defaul
 
 Release Notes
 ==
-Version 2.0.5
+Version 2.0.6 - Dec 12 2018
+--
+* Compatibility - An evolution of 2.0.5, but "Java8-clean", Java7 compatibility split into separate artifact
+
+Version 2.0.5 - Dec 12 2018
 --
 * Enhancement - HTTP calls are Java-async now, still Android/Java7 compatible (thanks @jtjeferreira!)
 
-Version 2.0.4
+Version 2.0.4 - Oct 14 2018
 --
 * Compatibility - removed slf4j-simple from test to prevent dependency pollution (#20)
 * Enhancement - added more API abilities to manipulate sampling, and added sampling test
 
-Version 2.0.3
+Version 2.0.3 - Oct 12 2018
 --
 * Compatibility - Altered Core and OkHttpClientImpl so it worked with minSDK / API15 on Android
 
-Version 2.0.2
+Version 2.0.2 - Oct 12 2018
 --
 * Error - Fixed #11 - not closing OkHttp response body in postBatch()
 * Enhancement - Fixed #16 - implemented basic sampling strategy with GoogleAnalyticsConfig.setSamplePercentage(int)
