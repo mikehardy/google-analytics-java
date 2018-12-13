@@ -42,13 +42,13 @@ This library implements the measurement protocol with following features.
 
 * Supports all parameters and hit types.
 * Able to configure default parameters, which would be used for each request.
-* Type safe data types as appropriate (String, Integer, Double and Boolean)
+* Type-safe data types as appropriate (String, Integer, Double and Boolean)
 * Convenient hit specific request types for easy construction.
 * Synchronous or Asynchronous Event Processing.
 * Support for delayed request construction.
 * Asynchronous processing uses Java Concurrent Executor Service.
 * Uses the latest Apache Http or OkHttp client for high performing event posting.
-* Event posting can be enabled/disabled at run time at configuration level.
+* Event posting can be enabled/disabled at runtime at configuration level.
 * Supports connections via Proxy
 * Gathers some basic information from the underlying Jvm (File Encoding, User Language, Screen Size, Color Depth etc)
 * Validates the request and can throw exception or log warning if validation fails (still wip)
@@ -70,7 +70,7 @@ to post events across multiple threads and instance is designed to be thread-saf
 
 It can be initialized with two types of information. Set of information called configuration (via `GoogleAnalyticsConfig`), which is used by the library and default request settings (`DefaultRequest`), which defines the default attributes for all subsequent requests.
 
-Builder also provides typed methods to set most-relavent attributes of default request for readability.
+Builder also provides typed methods to set most-relevant attributes of default request for readability.
 
 Simplified initialization with all defaults is as follows.
 
@@ -96,7 +96,7 @@ Note that tracking id can be set to one value for all requests (using default re
 
 Sending Events
 --
-To send reqeusts, create one of the event type requests, configure the values for that event and call `send()`. 
+To send requests, create one of the event type requests, configure the values for that event and call `send()`. 
 
 Here are some examples:
 
@@ -150,17 +150,17 @@ Library provides a master switch with config `enabled`. If set to `false` then r
 
 Discovering Request Parameters
 --
-Library tries to discover some default request parameters, which is controlled via config `discoverRequestParameters` with default value of `true`. Parameters are discoverd during the building process so it is one time activity.
+Library tries to discover some default request parameters, which is controlled via config `discoverRequestParameters` with default value of `true`. Parameters are discovered during the building process so it is one time activity.
 
 It discovers following parameters:
 
 * user agent
 * user language
-* docuemnt encoding
+* document encoding
 * screen resolution
 * screen colors
 
-To discover scren resolution and colors, it needs access to `java.awt`. Since not all environments have access to awt, it is not enabled by default. If would like to use it, set config `requestParameterDiscoverer` to instance of `AwtRequestParameterDiscoverer`
+To discover screen resolution and colors, it needs access to `java.awt`. Since not all environments have access to awt, it is not enabled by default. If would like to use it, set config `requestParameterDiscoverer` to instance of `AwtRequestParameterDiscoverer`
 
 Http Client
 --
