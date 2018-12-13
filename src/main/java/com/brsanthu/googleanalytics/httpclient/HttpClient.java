@@ -1,6 +1,6 @@
 package com.brsanthu.googleanalytics.httpclient;
 
-import java8.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture;
 
 public interface HttpClient extends AutoCloseable {
     CompletableFuture<HttpResponse> post(HttpRequest req);
