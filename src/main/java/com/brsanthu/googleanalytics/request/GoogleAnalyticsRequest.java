@@ -54,7 +54,7 @@ import static com.brsanthu.googleanalytics.request.GoogleAnalyticsParameter.VIEW
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
 import com.brsanthu.googleanalytics.GoogleAnalyticsExecutor;
 import com.brsanthu.googleanalytics.internal.Constants;
@@ -1866,7 +1866,7 @@ public class GoogleAnalyticsRequest<T> {
         return delegateExecutor.post(this);
     }
 
-    public Future<GoogleAnalyticsResponse> sendAsync() {
+    public CompletableFuture<GoogleAnalyticsResponse> sendAsync() {
         if (delegateExecutor == null) {
             throw new RuntimeException("GoogleAnalyticsExecutor is null");
         }
