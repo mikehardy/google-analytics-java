@@ -163,6 +163,11 @@ Library abstracts http client interaction via `HttpClient` interface with defaul
 
 Release Notes
 ==
+Version 2.0.7 - Feb 19 2019
+--
+* Various dependency updates
+* Fix APIs to return CompletableFuture instead of Future (thanks @jtjeferreira!)
+
 Version 2.0.6 - Dec 12 2018
 --
 * Compatibility - An evolution of 2.0.5, but "Java8-clean", Java7 compatibility split into separate artifact
@@ -220,6 +225,12 @@ Version 1.0.4 - Mar 3 2014
 Version 1.0.3 - Jan 20 2014
 --
 * Fixed the issue #6
+
+
+Development Notes
+==
+* To release (assuming you have maven / sonatype permission), `mvn release:prepare` then `mvn release:perform`
+
 
 Other Implementations
 ==
