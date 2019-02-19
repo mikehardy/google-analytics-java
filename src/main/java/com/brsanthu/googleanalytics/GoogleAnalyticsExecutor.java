@@ -1,6 +1,6 @@
 package com.brsanthu.googleanalytics;
 
-import java.util.concurrent.Future;
+import java8.util.concurrent.CompletableFuture;
 
 import com.brsanthu.googleanalytics.request.GoogleAnalyticsRequest;
 import com.brsanthu.googleanalytics.request.GoogleAnalyticsResponse;
@@ -8,5 +8,5 @@ import com.brsanthu.googleanalytics.request.GoogleAnalyticsResponse;
 public interface GoogleAnalyticsExecutor {
     GoogleAnalyticsResponse post(GoogleAnalyticsRequest<?> request);
 
-    Future<GoogleAnalyticsResponse> postAsync(GoogleAnalyticsRequest<?> request);
+    CompletableFuture<GoogleAnalyticsResponse> postAsync(GoogleAnalyticsRequest<?> request);
 }
