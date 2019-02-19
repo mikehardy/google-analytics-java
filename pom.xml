@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.mikehardy</groupId>
     <artifactId>google-analytics-java7</artifactId>
-    <version>2.0.7-SNAPSHOT</version>
+    <version>2.0.7</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -214,7 +214,7 @@ More information about the protocol is available at https://developers.google.co
         <url>https://github.com:mikehardy/google-analytics-java/tree/java7</url>
         <connection>scm:git:git@github.com:mikehardy/google-analytics-java.git</connection>
         <developerConnection>scm:git:git@github.com:mikehardy/google-analytics-java.git</developerConnection>
-      <tag>java7</tag>
+      <tag>google-analytics-java7-2.0.7</tag>
   </scm>
     <issueManagement>
         <system>github.com</system>
