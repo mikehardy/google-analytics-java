@@ -158,7 +158,7 @@ public class OkHttpClientImpl implements HttpClient {
             bodyBuffer.writeString("\r\n", Charset.forName("UTF-8"));
         }
 
-        Request request = new Request.Builder().url(batchReq.getUrl()).post(RequestBody.create(null, bodyBuffer.readUtf8())).build();
+        Request request = new Request.Builder().url(batchReq.getUrl()).post(RequestBody.create(bodyBuffer.readUtf8(), null)).build();
         if (logger.isDebugEnabled()) logger.debug("HttpClient.postBatch() url/body: " + request.url() + " / " + renderBody(request.body()));
 
         CompletableFuture<HttpBatchResponse> completableFuture = new CompletableFuture<>();
