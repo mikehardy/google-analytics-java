@@ -7,16 +7,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.brsanthu.googleanalytics.httpclient.HttpClient;
 import com.brsanthu.googleanalytics.internal.GoogleAnalyticsImpl;
 import com.brsanthu.googleanalytics.request.ScreenViewHit;
 
 public class SamplingTest {
-    private static final Logger logger = LoggerFactory.getLogger(SamplingTest.class);
-    
     private HttpClient mockHttpClient = null;
     
     @Before
