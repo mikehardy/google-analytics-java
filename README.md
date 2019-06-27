@@ -163,6 +163,9 @@ Library abstracts http client interaction via `HttpClient` interface with defaul
 
 Release Notes
 ==
+Version 2.0.8 - Jun 27 2019
+* Various dependency updates, notably OkHTTP 3 -> 4
+
 Version 2.0.7 - Feb 19 2019
 --
 * Various dependency updates
