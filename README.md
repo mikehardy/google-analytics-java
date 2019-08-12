@@ -164,12 +164,15 @@ Library abstracts http client interaction via `HttpClient` interface with defaul
 Release Notes
 ==
 Version 2.0.10-java7 - Jul 19 2019
+--
 * Revert OkHTTP further to 3.12.x to *actually* maintain Android 4.x coverage
 
 Version 2.0.9-java7 - Jul 18 2019
+--
 * Revert OkHTTP 3->4 - maintain coverage of Android 4.x
 
 Version 2.0.8-java7 - Jun 27 2019
+--
 * Various dependency updates, notably OkHTTP 3 -> 4
 
 Version 2.0.7-java7 - Feb 19 2019
