@@ -27,7 +27,7 @@ View Javadocs [here](https://www.javadoc.io/doc/net.mikehardy/google-analytics-j
 
 The fluent API is very easy to use, with sensible default options. 
 
-The library based on Java 1.8 but there is a supported version compatible with Java 1.7 (and Android down to at least API 15) using the [fairly amazing Java streamsupport / completable-futures compatibility library](https://github.com/stefan-zobel/streamsupport). If you need that, you'll just want to alter the dependency to use the "google-analytics-java7" artifact instead of "google-analytics-java"
+The library uses Java 1.8 features only available in Android7/API24/Nougat or higher, but there is a supported version compatible with Java 1.7 (and Android down to at least API 15) using the [fairly amazing Java streamsupport / completable-futures compatibility library](https://github.com/stefan-zobel/streamsupport). If you need that, you'll just want to alter the dependency to use the "google-analytics-java7" artifact instead of "google-analytics-java"
 
 
 Features
