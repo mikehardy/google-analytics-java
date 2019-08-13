@@ -16,7 +16,7 @@ script:
   - mvn package -Dgpg.skip=true
 
 before_cache:
-  - rm -fr $HOME/.m2/repository/net/mikehardy/google-analytics-java
+  - rm -fr $HOME/.m2/repository/net/mikehardy/google-analytics-java7
 
 cache:
   directories:
