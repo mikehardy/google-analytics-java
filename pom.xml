@@ -10,7 +10,7 @@
         <slf4j-version>1.7.28</slf4j-version>
         <junit.version>4.12</junit.version>
         <mockito.version>3.0.0</mockito.version>
-        <httpclient-version>4.5.9</httpclient-version>
+        <httpclient-version>4.5.10</httpclient-version>
         <okhttp-version>4.2.0</okhttp-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
