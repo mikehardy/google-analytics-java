@@ -11,7 +11,7 @@
         <junit.version>4.12</junit.version>
         <mockito.version>3.0.0</mockito.version>
         <httpclient-version>4.5.9</httpclient-version>
-        <okhttp-version>4.1.1</okhttp-version>
+        <okhttp-version>4.2.0</okhttp-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
