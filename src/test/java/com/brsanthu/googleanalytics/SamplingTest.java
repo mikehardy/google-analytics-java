@@ -53,7 +53,7 @@ public class SamplingTest {
         GoogleAnalytics analytics = getOutOfSampleAnalytics();
         ScreenViewHit hit = analytics.screenView().screenName("test screen");
         hit.send();
-        Mockito.verifyZeroInteractions(mockHttpClient);
+        Mockito.verifyNoInteractions(mockHttpClient);
     }        
     
     @Test
