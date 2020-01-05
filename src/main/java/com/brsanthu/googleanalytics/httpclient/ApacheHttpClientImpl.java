@@ -5,7 +5,6 @@ import static com.brsanthu.googleanalytics.internal.GaUtils.isNotEmpty;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -90,9 +89,9 @@ public class ApacheHttpClientImpl implements HttpClient {
     }
 
     protected List<NameValuePair> createNameValuePairs(HttpRequest req) {
-        List<NameValuePair> parmas = new ArrayList<>();
-        req.getBodyParams().forEach((key, value) -> parmas.add(new BasicNameValuePair(key, value)));
-        return parmas;
+        List<NameValuePair> params = new CopyOnWriteArrayList<>();
+        req.getBodyParams().forEach((key, value) -> params.add(new BasicNameValuePair(key, value)));
+        return params;
     }
 
     @Override
@@ -133,7 +132,8 @@ public class ApacheHttpClientImpl implements HttpClient {
             CloseableHttpResponse httpResp = null;
 
             try {
-                List<List<NameValuePair>> listOfReqPairs = req.getRequests().stream().map(this::createNameValuePairs).collect(Collectors.toList());
+                List<HttpRequest> reqs = new CopyOnWriteArrayList<HttpRequest>(req.getRequests());
+                List<List<NameValuePair>> listOfReqPairs = reqs.stream().map(this::createNameValuePairs).collect(Collectors.toList());
                 httpResp = execute(req.getUrl(), new BatchUrlEncodedFormEntity(listOfReqPairs));
                 resp.setStatusCode(httpResp.getStatusLine().getStatusCode());
 

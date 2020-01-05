@@ -163,6 +163,12 @@ Library abstracts http client interaction via `HttpClient` interface with defaul
 
 Release Notes
 ==
+Version 2.0.10 - Jan 6 2019
+--
+* fixed ConcurrentModificationException in ApacheClient batch post
+* dependency updates
+* logging during test
+
 Version 2.0.9 - Dec 19 2019
 --
 * dependency updates
