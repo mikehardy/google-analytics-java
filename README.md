@@ -163,6 +163,11 @@ Library abstracts http client interaction via `HttpClient` interface with defaul
 
 Release Notes
 ==
+Version 2.0.13-java7 - Mar 3 2020
+--
+* okhttp dependency update for Android 11 support
+* various other dependency updates
+
 Version 2.0.12-java7 - Jan 6 2019
 --
 * fixed ConcurrentModificationException in ApacheClient batch post
