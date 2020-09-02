@@ -9,7 +9,7 @@
         <java-version>1.8</java-version>
         <slf4j-version>1.7.30</slf4j-version>
         <junit.version>4.13</junit.version>
-        <mockito.version>3.5.7</mockito.version>
+        <mockito.version>3.5.9</mockito.version>
         <httpclient-version>4.5.12</httpclient-version>
         <okhttp-version>3.12.12</okhttp-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
